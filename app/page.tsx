@@ -3,11 +3,12 @@ import React, { useState, useEffect } from "react";
 import { 
   BarChart3, Users, AlertTriangle, TrendingUp, 
   MapPin, RefreshCw, Layers, ShieldCheck, 
-  Activity, ArrowRight, Zap, Target
+  Activity, ArrowRight, Zap, Target, GitBranch
 } from "lucide-react";
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar
 } from 'recharts';
+import WorkforceFlowMap from "./components/WorkforceFlowMap";
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -153,6 +154,9 @@ export default function Dashboard() {
           <button onClick={() => setActiveTab("simulator")} className={`w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-colors ${activeTab === "simulator" ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800"}`}>
             <Zap className="inline-block mr-2" size={18} /> Policy Simulator
           </button>
+          <button onClick={() => setActiveTab("flowmap")} className={`w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-colors ${activeTab === "flowmap" ? "bg-indigo-600 text-white" : "text-slate-300 hover:bg-slate-800"}`}>
+            <GitBranch className="inline-block mr-2" size={18} /> Workforce Flow Map
+          </button>
         </nav>
 
         {/* Data Freshness Indicator */}
@@ -295,6 +299,43 @@ export default function Dashboard() {
                       </div>
                     </div>
                   </div>
+
+                  {/* WORKFORCE FLOW MAP — embedded in Overview */}
+                  <WorkforceFlowMap
+                    selectedSkill={selectedSkill}
+                    selectedState={selectedState}
+                    allSkills={skills}
+                  />
+                </div>
+              )}
+
+              {activeTab === "flowmap" && (
+                <div className="space-y-4">
+                  <div>
+                    <h2 className="text-2xl font-extrabold text-slate-900">Workforce Flow Map</h2>
+                    <p className="text-sm text-slate-500 mt-1">
+                      Zone-wise skill underflow and overflow — where workforce is available and where it is needed.
+                    </p>
+                  </div>
+                  <WorkforceFlowMap
+                    selectedSkill={selectedSkill}
+                    selectedState={selectedState}
+                    allSkills={skills}
+                  />
+                  {/* Explainer */}
+                  <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-5">
+                    <h3 className="text-sm font-bold text-indigo-800 mb-2">How to read this map</h3>
+                    <ul className="text-xs text-indigo-700 space-y-1 list-disc pl-4">
+                      <li><strong>🔴 Underflow zones</strong> have demand exceeding supply — they need additional workforce.</li>
+                      <li><strong>🔵 Overflow zones</strong> have supply exceeding demand — there is available workforce.</li>
+                      <li><strong>Arrows</strong> show potential workforce mobility opportunities from overflow to underflow zones.</li>
+                      <li>Use the <strong>time horizon toggle</strong> to see how the situation evolves over 12, 24, or 36 months.</li>
+                      <li>Click any zone bubble for detailed metrics and specific matching opportunities.</li>
+                    </ul>
+                    <p className="text-[11px] text-indigo-500 mt-3 border-t border-indigo-100 pt-2">
+                      ⚠️ Prototype / Simulated Data — Potential workforce match is calculated from demo data. Actual workforce mobility depends on wages, eligibility, housing, transport, individual preferences and other real-world factors.
+                    </p>
+                  </div>
                 </div>
               )}
 
@@ -384,6 +425,30 @@ export default function Dashboard() {
                       </div>
                     </div>
                   )}
+
+                  {/* Workforce Flow Map — quick view in Deep Dive */}
+                  <div className="bg-white rounded-xl border border-indigo-200 shadow-sm p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                          <GitBranch size={18} className="text-indigo-500" />
+                          Workforce Flow Map
+                        </h3>
+                        <p className="text-xs text-slate-500 mt-0.5">Zone-level underflow and overflow for this skill</p>
+                      </div>
+                      <button
+                        onClick={() => setActiveTab("flowmap")}
+                        className="text-xs text-indigo-600 font-bold border border-indigo-200 px-3 py-1.5 rounded-lg hover:bg-indigo-50 transition-colors flex items-center gap-1"
+                      >
+                        Full Map <ArrowRight size={12} />
+                      </button>
+                    </div>
+                    <WorkforceFlowMap
+                      selectedSkill={selectedSkill}
+                      selectedState={selectedState}
+                      allSkills={skills}
+                    />
+                  </div>
                 </div>
               )}
 
